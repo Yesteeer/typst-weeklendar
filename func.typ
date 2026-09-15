@@ -2,27 +2,32 @@
 
 // A function to convert ISO-8601 dates as strings into a datetime element
 #let to-datetime(date) = {
-  let reg-complete = "^([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])[T](0[0-9]|[1][0-9]|[2][0-4]):(0[0-9]|[1-5][0-9]):(0[0-9]|[1-5][0-9])|([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])[T]((0[0-9]|[1][0-9]|[2][0-4]):(0[0-9]|[1-5][0-9]))|([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])[T](0[0-9]|[1][0-9]|[2][0-4])$"
-  let reg-minimal = "^([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])$"
-  assert(
-    date.match(regex(reg-complete)) != none or (date.match(regex(reg-minimal)) != none and date.len() == 10), 
-    message: "A date must be of the form \"dd-mm-yyyyThh:mm:ss\", \"dd-mm-yyyyThh:mm\", \"dd-mm-yyyyThh\" or \"dd-mm-yyyy\"."
-  )
-  let splitted = date.split("T")
-  let (_date, _time) = if splitted.len() == 1 {
-    (splitted.at(0), "00:01:00")
-  } else {
-    splitted
+  if type(date) == datetime {
+    return date
   }
-  let seq = (_date.split("-") + _time.split(":") + ("0", "0")).map(it => int(it))
-  return datetime(
-    day: seq.at(2), 
-    month: seq.at(1), 
-    year: seq.at(0), 
-    hour: seq.at(3),
-    minute: seq.at(4),
-    second: seq.at(5)
-  )
+  else {
+    let reg-complete = "^([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])[T](0[0-9]|[1][0-9]|[2][0-4]):(0[0-9]|[1-5][0-9]):(0[0-9]|[1-5][0-9])|([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])[T]((0[0-9]|[1][0-9]|[2][0-4]):(0[0-9]|[1-5][0-9]))|([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])[T](0[0-9]|[1][0-9]|[2][0-4])$"
+    let reg-minimal = "^([1-2][0-9][0-9][0-9])-(0[1-9]|1[1,2])-(0[1-9]|[12][0-9]|3[01])$"
+    assert(
+      date.match(regex(reg-complete)) != none or (date.match(regex(reg-minimal)) != none and date.len() == 10), 
+      message: "A date must be of the form \"dd-mm-yyyyThh:mm:ss\", \"dd-mm-yyyyThh:mm\", \"dd-mm-yyyyThh\" or \"dd-mm-yyyy\"."
+    )
+    let splitted = date.split("T")
+    let (_date, _time) = if splitted.len() == 1 {
+      (splitted.at(0), "00:01:00")
+    } else {
+      splitted
+    }
+    let seq = (_date.split("-") + _time.split(":") + ("0", "0")).map(it => int(it))
+    return datetime(
+      day: seq.at(2), 
+      month: seq.at(1), 
+      year: seq.at(0), 
+      hour: seq.at(3),
+      minute: seq.at(4),
+      second: seq.at(5)
+    )
+  }
 }
 
 // A function to change the time in a datetime
@@ -57,6 +62,26 @@
   return calc.ceil((event.start - starting-date).weeks())
 }
 
+// A function that converts the `start` and `end` of an event to datetime elements. 
+// It also sets some defaults for each event.
+#let to-datetime-event(event) = {
+  let (start, end) = (event.start, event.end).map(it => if type(it) != datetime {
+    to-datetime(it)
+  } else {
+    it
+  })
+  return (
+    repeat-until: none,
+    repeat-frequency: none,
+    fill: blue.lighten(70%),
+    summary: "",
+    description: "",
+  ) + event + (
+    start: start,
+    end: end
+  )
+}
+
 // A function that resolves the events spanning on multiple days/weeks
 #let resolve-event(event, starting-hour, ending-hour) = {
   let result = ()
@@ -74,7 +99,7 @@
           int(starting-hour.display("[second]")),
         )
       },
-      end: if (int(current-start.display("[day]")) + 0) < int(event.end.display("[day]")) {
+      end: if int(current-start.display("[day]")) < int(event.end.display("[day]")) {
         change-time(
           current-start,
           int(ending-hour.display("[hour]")),
@@ -92,10 +117,14 @@
 
 // A function that resolves periodic events
 #let repeat-event(event) = {
+  assert(
+    event.repeat-until == none or type(event.repeat-frequency) == duration, 
+    message: "If repeat-until is not none, then repeat-frequency should be a non empty duration."
+  )
   let result = (event,)
   let current-start = event.start
   let current-end = event.end
-  while event.repeat-until != none and current-start < event.repeat-until - duration(days: 7) {
+  while event.repeat-until != none and current-start < to-datetime(event.repeat-until) - duration(days: 7) {
     result.push(event + (
       start: current-start + event.repeat-frequency,
       end: current-end + event.repeat-frequency

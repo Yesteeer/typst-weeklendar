@@ -114,10 +114,19 @@
         }
         else {
           (event) => {
-            rect(width: 100%, fill: blue.lighten(70%), stroke: blue)[#grid(
+            rect(
+              width: 100%, 
+              height: 100%,
+              fill: event.fill, 
+              stroke: event.fill.darken(20%),
+            )[#grid(
               columns: (1fr),
               align: center,
-              [#event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]")]
+              [
+                #text(size: 1.1em)[*#event.summary*] \
+                #event.description #v(1fr)
+                #event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]")
+              ]
             )
             #v(1fr)]
           }
@@ -223,6 +232,8 @@
   /// - "dd-mm-yyyyThh:mm" 
   /// - "dd-mm-yyyyThh:mm:ss" 
   ///
+  /// Or directly as a datetime element.
+  ///
   /// -> str
   starting-date: datetime.today(),
 
@@ -231,7 +242,7 @@
   /// The accepted date format are the same as for the starting-date.
   ///
   /// -> str
-  ending-date: datetime.today(offset: 1),
+  ending-date: datetime.today() + duration(days: 7),
 
   /// The paper's height (not the same as the timetable's height !). -> length
   height: 21cm,
@@ -247,7 +258,15 @@
 
   /// The days names to be displayed on the timetable. -> array
   //TODO: add default in other file
-  days: ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"),
+  days: (
+    "Montag", 
+    "Dienstag", 
+    "Mittwoch", 
+    "Donnerstag", 
+    "Freitag", 
+    "Samstag", 
+    "Sonntag"
+  ),
 
   /// The padding below and above the displayed days. -> dictionary
   days-pad : (above: 0.5cm, below: 0.5cm),
@@ -271,35 +290,34 @@
   
   /// A custom function for generating weekly titles. It takes the first week's day "monday" as an argument and build a custom title depending on monday's date.
   ///
-  /// *Example:*
-  /// TODO
-  ///
   /// -> auto | function
   weekly-title: auto,
 
   /// A custom function for the generic content of an event. It takes an event  as an argument.
-  /// It is important to build a content that expands vertically (for example by using `#v(1fr)`), 
-  /// so that the event are displayed on the entire associated timeline.
-  ///
-  /// *Example:*
-  /// TODO
+  /// It is recommended to build a content that expands vertically (for example by using `#v(1fr)`), 
+  /// so that the events are displayed on the entire associated timeline.
   ///
   /// -> auto | function
   event-fct: auto,
 
   /// A debugging option to show some of the displayed element's boundaries. -> boolean
-  debug: true,
+  debug: false,
 
-  /// Events to be displayed on the calendar, each described by a dictionary. Passed as a positional argument.
+  /// Events to be displayed on the calendar, passed as a positional argument. 
   ///
-  /// *Example:*
-  ///
-  /// TODO: Example + conversion to datetime (and explanations about format)!
+  /// Each event is described by a dictionary with two mandatory arguments: `start` and `end`, 
+  /// which are to be given in the ISO 8601 extended format (see `starting-date` above) or directly
+  /// as a datetime element. \
+  /// If you want to make a periodic event, then you can use `repeat-until` and `repeat-frequency`.
+  /// You can add extra named arguments, to be accessed by your custom `event-fct`.
   ///
   /// -> array
   events,
 
 ) = {
+
+  // Resolve starting and ending dates
+  let (starting-date, ending-date) = (starting-date, ending-date).map(it => to-datetime(it))
 
   // Resolve margins
   let margin = (
@@ -333,7 +351,7 @@
 
   // Resolve events spanning on multiple days/weeks
   let resolved-events = ()
-  for event in events {
+  for event in events.map(it => to-datetime-event(it)) {
     resolved-events = resolved-events + resolve-event(
       event, 
       time.start, 
