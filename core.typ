@@ -118,7 +118,6 @@
               width: 100%, 
               height: 100%,
               fill: event.fill, 
-              stroke: event.fill.darken(20%),
             )[#grid(
               columns: (1fr),
               align: center,
@@ -269,7 +268,7 @@
   ),
 
   /// The padding below and above the displayed days. -> dictionary
-  days-pad : (above: 0.5cm, below: 0.5cm),
+  days-pad : (:),
 
   /// The first timeline to appear on the timetable. -> datetime
   time-start: datetime(hour: 8, minute: 0, second: 0),
@@ -303,21 +302,27 @@
   /// A debugging option to show some of the displayed element's boundaries. -> boolean
   debug: false,
 
-  /// Events to be displayed on the calendar, passed as a positional argument. 
+  /// Events to be displayed on the calendar, passed as a positional arguments. 
   ///
   /// Each event is described by a dictionary with two mandatory arguments: `start` and `end`, 
   /// which are to be given in the ISO 8601 extended format (see `starting-date` above) or directly
   /// as a datetime element. \
   /// If you want to make a periodic event, then you can use `repeat-until` and `repeat-frequency`.
-  /// You can add extra named arguments, to be accessed by your custom `event-fct`.
+  /// You can add extra named arguments, that can be accessed by your custom `event-fct`.
   ///
   /// -> array
-  events,
+  ..events,
 
 ) = {
 
   // Resolve starting and ending dates
   let (starting-date, ending-date) = (starting-date, ending-date).map(it => to-datetime(it))
+
+  // Resolve padding
+  let days-pad = (
+    above: 0.5cm, 
+    below: 0.5cm
+  ) + days-pad
 
   // Resolve margins
   let margin = (
@@ -351,10 +356,12 @@
 
   // Resolve events spanning on multiple days/weeks
   let resolved-events = ()
-  for event in events.map(it => to-datetime-event(it)) {
+  for event in events.pos().map(it => to-datetime-event(it)) {
     resolved-events = resolved-events + resolve-event(
       event, 
-      time.start, 
+      time.start - duration(
+        hours: 1
+      ), 
       time.start + duration(
         hours: time.number
       )
