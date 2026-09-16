@@ -121,4 +121,6 @@ Here is a three-week example output, with no styling customization. More on cust
 )
 ```
 
-![image](./assets/readme-example.pdf)
+![image](./assets/readme-example-1.png)
+![image](./assets/readme-example-2.png)
+![image](./assets/readme-example-3.png)
