@@ -1,28 +1,5 @@
-# Weeklendar
+#import "../lib.typ": *
 
-_Weeklendar_ (contraction of _week_ and _calendar_) is a Typst package for creating a calendar displayed as weekly timetables which design (on the visual side) is based on the LaTeX Overleaf [timetable](https://www.overleaf.com/latex/templates/timetable/npdzfmychtjm) template. Take a look at the [manual](https://github.com/Yesteeer/typst-weeklendar/blob/main/docs/manual.pdf?raw=true) for more informations and examples.
-
-## Dependencies
-
-_Weeklendar_ makes use of [cetz:0.5.2](https://typst.app/universe/package/cetz/).
-
-## Quickstart
-
-Simply download the package locally (as described on the [Typst Packages](https://github.com/typst/packages)) repository. Then import and use Weeklendar. 
-
-```typst
-#import "@local/weeklendar:0.1.0": weeklendar
-```
-
-## Functions
-
-The package comes with a single function `weeklendar()` which generates a calendar in the form of one timetable page per week.
-
-## Example
-
-Here is a three-week example output, with no styling customization. More on customizing can be found in the [manual](https://github.com/Yesteeer/typst-weeklendar/blob/main/docs/manual.pdf?raw=true).
-
-```typst
 #let events = (
   (
     start: "2026-09-21T08:15", end: "2026-09-21T10",
@@ -119,6 +96,3 @@ Here is a three-week example output, with no styling customization. More on cust
   time-number: 10,
   ..events
 )
-```
-
-![image](./assets/readme-example.pdf)

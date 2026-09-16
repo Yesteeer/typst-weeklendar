@@ -23,6 +23,7 @@
   ]
 ]
 #show ref: set text(purple)
+#show link: set text(eastern)
 #show heading.where(level: 1): it => {
   pagebreak()
   it
@@ -44,6 +45,8 @@
 By default, calling the `weeklendar()` function with empty events generates an empty timetable of `datetime.today()`'s week. This is only meant to have access to an empty page and to the current's week dates, not to be used permanently, since it is based on today's datetime !
 
 ```typst
+  #import "local/weeklendar:0.1.0": *
+
   #weeklendar() 
 ```
 
@@ -55,8 +58,7 @@ The timetable itself has an hourly timeline, which starts at "8:00" by default, 
 
 The days' name can also be customized (`days` argument). You can also change the number of days displayed, so you can remove week-ends if you are only intersted in working days. In this case, only use events happening on the first 5 days to avoid events to exceed the timetable. Note that you can only remove days at the end of the week, otherwise the displayed events won't match with the right days ! The spacing above and below the days' names can also be customized (see @spacing).
 
-By changing the `starting-date` and `ending-date` you can add more weeks to your calendar. These dates determine which events will be displayed, and not the range of the displayed weeks ! For example for `starting-date: "2026-09-15"` and `ending-date: "2026-09-16"`, an event happening on the `"2026-09-17"` won't be considered, even if it is part of the displayed week !
-
+By changing the `starting-date` and `ending-date` you can add more weeks to your calendar. These dates determine which events will be displayed, and not the range of the displayed weeks ! 
 = Add events
 
 A calendar without events makes no sense ! So let us see how we can add events to our weeklendar. From now on, we will always fix starting and ending dates.
@@ -76,7 +78,7 @@ An event is characterized by a dictionary containing at least a `start` and `end
     repeat-frequency: none,    // optional with default: none
   )
 ```
-The first 3 optional keys allow you to customize the default appearance of the displayed event. We will discuss the 2 other optional keys when we look at periodic events (see @periodic). We will see in @event-style that we can add further entries to an event's dictionary. Let's see what happens if we add this event to `weeklendar()`.
+The first 3 optional keys allow you to customize the default appearance of the displayed event. We will discuss the 2 other optional keys when we look at periodic events (see @periodic). We will see in @event-style that we can add further entries to an event's dictionary. Let's see what happens if we add this event to `weeklendar()`. From now on we will omit the package's import in the examples.
 
 ```typst
 #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", event) 
@@ -99,7 +101,7 @@ It could happend that an event doesn't fit in the displayed timelines. Either yo
       end: "2026-09-18T21",      
       summary: "Dinner",           
       description: "Bring a salad !",  
-      fill: red.lighten(80%),   
+      fill: green.lighten(80%),   
     )
     (
       start: "2026-09-19T07:30", 
@@ -180,11 +182,185 @@ Finally, the padding above and below the days' names can be changed vie the `day
 
 = Customize title box <title>
 
-WIP
+The title and subtitle of a week's timetable can't be changed. However, you can provide `weeklendar()` as custom `title-fct` function to generate you own title boxes. The only constraint are that the function must take the first week's monday datetime as an argument and that its margins are determined by the `margin` argument. The default function that is used is the following:
+
+```typst
+  #let default-title-fct(monday) = {
+    grid(
+      columns: 1fr,
+      align: center,
+      inset: 15pt,
+      [
+        #set text(20pt)
+         Week of #(monday).display("[day]") to #(monday + duration(days: 6)).display("[day]") #monday.display("[month repr:long]") 2026
+      ],
+    )
+  }
+```
+
+We can for example only show the `month` and the week number.
+
+```typst
+  #let title(monday) = (
+    grid(
+      columns: 1fr, // important to make the content really centered
+      align: center,
+      row-gutter: 15pt,
+      [
+        #set text(20pt)
+        #monday.display("[month repr:long] [year]") 
+      ],
+      [Week number: #monday.display("[week_number]")]
+    )
+  )
+
+  #weeklendar(
+    time-number: 2,
+    height: 8cm,
+    weekly-title: title,
+  )
+```
+
+#image("../assets/title-box-example.pdf", page: 1, width: 100%)
+
+= Customize days names <days-name>
+
+The previous example looks good, but it would be nice to have the dates of the week's days somewhere. What about next to or below the days names ? That is the content of this section
+
+With the same idea, we can also customize the days appearance in the timetable by providing our own `days-fct` function. This function should take two arguments: the date of the week's monday, and the day's name to display. The default function only uses the former argument:
+
+```typst
+  #let default-days-fct(monday, day-list, day-number) = {
+    grid(
+      columns: 1fr, // important to make the content really centered
+      align: center,
+      [#day-list.at(day-number)],
+    )
+  }
+```
+
+But let's say that we want to display the day's date below its name, then we can complete our previous example as follows:
+
+```typst
+  #let title(monday) = [...]
+
+  #let days(monday, day-list, day-number) = {
+    grid(
+      columns: 1fr, // important to make the content really centered
+      align: center,
+      row-gutter: 10pt,
+      [#day-list.at(day-number)],
+      [#(monday + duration(days: day-number)).display("[day]")#super("th")]
+    )
+  }
+
+  #weeklendar(
+    time-number: 2,
+    height: 8cm,
+    title-fct: title,
+    days-fct: days,
+  )
+```
+#image("../assets/days-box-example.pdf", page: 1, width: 100%)
+
 
 = Customize event styling <event-style>
 
-WIP
+Finally, the event's boxes can also be fully customized. If you're not happy with the default layout, you can provide your own `event-fct` which takes an `event` dictionary as an argument. The default function is defined as:
+
+```typst
+#let default-event-fct(event) = {
+    rect(
+      width: 100%, 
+      height: 100%,
+      fill: event.fill, 
+      stroke: black + .5pt,
+    )[
+      #grid(
+        columns: 1fr, // makes content really centered
+        rows: 1fr, // makes the event's box take all the allocated vertical space
+        inset: 5pt,
+        align: (x, y) => {
+          if y == 0 { top + center }
+          else if y == 1 { horizon + center }
+          else { bottom + center }
+        },
+        [
+          #text(size: 1.1em)[*#event.summary*]
+        ],
+        [
+          #event.description
+        ],
+        [
+          #event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]")
+        ]
+      )
+    ]
+  }
+```
+The important thing to keep in mind is that whatever content you build for your event, make sure that it takes the whole allocated vertical and horizontal space. Otherwise, the events won't appear properly. The nice thing here, is that you can provide additional keys to your events, which will then be accessible to your custom `event-fct` function !
+
+As an example, we will use the #link("https://typst.app/universe/package/showybox")[Showybox] package to customize our events. We will keep things simple, but the customization possibilities are endless. Here we simply want to add the posibility to remove the hours when not necessary, so each of our events will have to provide a `show-hours` key. The rest is just re-styling.
+
+```typst
+  #import "local/weeklendar:0.1.0": *
+  #import "@preview/showybox:2.0.4": showybox
+
+  #let events = (
+    (
+      start: "2026-09-14T12:18", end: "2026-09-14T14:18", summary: "Hairdresser",
+      fill: olive, show-hours: true,
+    ),
+    (
+      start: "2026-09-17T06:15", end: "2026-09-17T09:45", summary: "Morning run",
+      fill: maroon, show-hours: true,
+    ),
+    (
+      start: "2026-09-19T08:00", end: "2026-09-20T17:00", summary: "Montain trip",
+      description: [
+        Don't forget to take
+          - suncream
+          - cap
+          - pic-nic
+          - ...
+      ], fill: eastern, show-hours: false,
+    ),
+  )
+
+  #let event-fct(event) = {
+    let title = if event.show-hours [
+      #event.summary \
+      (#event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]"))
+    ] else {event.summary}
+
+    showybox(
+      title: title,
+      footer-style: (
+        align: center,
+      ),
+      title-style: (
+        weight: 900,
+        color: black,
+        align: center
+      ),
+      frame: (
+        border-color: event.fill,
+        title-color: event.fill.lighten(30%),
+        body-color: event.fill.lighten(80%),
+      ),
+    )[
+      #event.description
+      #v(1fr)
+    ]
+  }
+
+  #weeklendar(
+    starting-date: "2026-09-14", ending-date: "2026-09-20", event-fct: event-fct, ..events
+  )
+```
+#image("../assets/event-box-example.pdf", page: 1, width: 100%)
+
+
 
 = Weeklendar's API
 

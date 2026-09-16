@@ -1,10 +1,63 @@
 #import "@preview/cetz:0.5.2" as cetz
 #import "func.typ": *
 
+// A default function for weekly-fct
+#let default-title-fct(monday) = {
+  grid(
+    columns: 1fr,
+    align: center,
+    inset: 15pt,
+    [
+      #set text(20pt)
+       Week of #(monday).display("[day]") to #(monday + duration(days: 6)).display("[day]") #monday.display("[month repr:long] [year]")
+    ],
+  )
+}
+
+// A default function for days-fct
+#let default-days-fct(monday, day-list, day-number) = {
+  grid(
+    columns: 1fr,
+    align: center,
+    [#day-list.at(day-number)],
+  )
+}
+
+// A default function for event-fct
+#let default-event-fct(event) = {
+  rect(
+    width: 100%, 
+    height: 100%,
+    fill: event.fill, 
+    stroke: black + .5pt,
+    inset: (x: 5pt, y: 2pt),
+  )[
+    #grid(
+      columns: 1fr, // makes content really centered
+      rows: 1fr, // makes the event's box take all the allocated vertical space
+      inset: 5pt,
+      align: (x, y) => {
+        if y == 0 { top + center }
+        else if y == 1 { horizon + center }
+        else { bottom + center }
+      },
+      [
+        #text(size: 1.1em)[*#event.summary*]
+      ],
+      [
+        #event.description
+      ],
+      [
+        #event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]")
+      ]
+    )
+  ]
+}
+
 // A function that constructs a week's timetable title
 #let build-week-title(
   monday,
-  title: auto,
+  title-fct: auto,
   debug: false,
   padding: 0pt,
 )= {
@@ -14,19 +67,11 @@
     below: padding,
   )[
     #{
-      if title != auto {
-        title(monday)
+      if title-fct != auto {
+        title-fct(monday)
       } 
       else {
-        align(center)[
-          #text(20pt)[
-            Stundenplan
-          ] 
-          #text(12pt)[
-            \ #v(0pt) 
-            Woche vom #(monday).display("[day]"). bis #(monday + duration(days: 6)).display("[day].[month].[year]")
-          ] 
-        ]
+        default-title-fct(monday)
       }
     }
   ]
@@ -37,6 +82,7 @@
   page,
   starting-date,
   days,
+  monday,
   hours-positions,
   time,
   timetable,
@@ -87,13 +133,16 @@
         anchor: "north",
         box(
           width: days.width,
-          height: .65em,
           stroke: if debug {red} else {none}, 
-          inset: (x: 15pt),
+          inset: (x: 15pt, y: 0pt),
         )[
-          #align(center)[
-            #days.list.at(i)
-          ]
+          #{
+            if days.fct != auto {
+              (days.fct)(monday, days.list, i)
+            } else {
+              default-days-fct(monday, days.list, i)
+            }
+          }
         ]
       )
     }
@@ -113,22 +162,7 @@
           event-fct
         }
         else {
-          (event) => {
-            rect(
-              width: 100%, 
-              height: 100%,
-              fill: event.fill, 
-            )[#grid(
-              columns: (1fr),
-              align: center,
-              [
-                #text(size: 1.1em)[*#event.summary*] \
-                #event.description #v(1fr)
-                #event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]")
-              ]
-            )
-            #v(1fr)]
-          }
+          default-event-fct
         },
       )
     }
@@ -142,7 +176,7 @@
   starting-date,
   days,
   time,
-  weekly-title,
+  title-fct,
   debug: false,
   events: (),
   event-fct: (event) => []
@@ -163,7 +197,7 @@
           monday,
           debug: debug,
           padding: page.margin.top,
-          title: weekly-title
+          title-fct: title-fct
         )
         
         let title-dimensions = measure(width: page.width - (page.margin.left + page.margin.right), title)
@@ -181,6 +215,25 @@
           x-position : time.width + 2*time.pad
         )
 
+        // Measure the days box height
+        let days-dimensions = measure(
+          for i in range(0, days.list.len()) {
+            box(
+              width: (timetable.width - time.x-position - time.pad) / days.list.len(),
+              stroke: if debug {red} else {none}, 
+              inset: (x: 15pt, y: 0pt),
+            )[
+              #{
+                if days.fct != auto {
+                  (days.fct)(monday, days.list, i)
+                } else {
+                  default-days-fct(monday, days.list, i)
+                }
+              }
+            ]
+          }
+        )
+
         // Compute thetimetable's days horizontal positions, as well as the days' height and width
         let days = days + (
           positions : 
@@ -189,7 +242,7 @@
             timetable.width - time.pad,
             days.list.len()
           ),
-          height: (0.65em).to-absolute() + days.pad.above + days.pad.below,
+          height: days-dimensions.height + days.pad.above + days.pad.below,
           width: (timetable.width - time.x-position - time.pad) / days.list.len()
         )
 
@@ -205,6 +258,7 @@
           page,
           starting-date,
           days,
+          monday,
           hours-positions,
           time,
           timetable,
@@ -223,7 +277,7 @@
 /// -> content
 #let weeklendar(
 
-  /// The starting-date defines the first week to be displayed in the calendar. 
+  /// The starting-date defines the first week  to be displayed in the calendar. 
   ///
   /// The date must be given with the following format (based on the ISO 8601 extended format): \
   /// - "dd-mm-yyyy"
@@ -256,16 +310,19 @@
   margin: (:),
 
   /// The days names to be displayed on the timetable. -> array
-  //TODO: add default in other file
   days: (
-    "Montag", 
-    "Dienstag", 
-    "Mittwoch", 
-    "Donnerstag", 
-    "Freitag", 
-    "Samstag", 
-    "Sonntag"
+    "Monday", 
+    "Tuesday", 
+    "Wednesday", 
+    "Thursday", 
+    "Friday", 
+    "Saturday", 
+    "Sunday"
   ),
+
+  /// A function to customize the displayed days appearance. It takes a day name and
+  /// the first week's monday date as arguments. -> auto | function
+  days-fct: auto,
 
   /// The padding below and above the displayed days. -> dictionary
   days-pad : (:),
@@ -290,7 +347,7 @@
   /// A custom function for generating weekly titles. It takes the first week's day "monday" as an argument and build a custom title depending on monday's date.
   ///
   /// -> auto | function
-  weekly-title: auto,
+  title-fct: auto,
 
   /// A custom function for the generic content of an event. It takes an event  as an argument.
   /// It is recommended to build a content that expands vertically (for example by using `#v(1fr)`), 
@@ -314,6 +371,12 @@
   ..events,
 
 ) = {
+
+  // Check for unknown named arguments
+  assert(
+    events.named().len() == 0,
+    message: "Unrecognized named argument provided.."
+  )
 
   // Resolve starting and ending dates
   let (starting-date, ending-date) = (starting-date, ending-date).map(it => to-datetime(it))
@@ -351,7 +414,8 @@
   // Regroup days arguments
   let days = (
     list: days,
-    pad: days-pad
+    pad: days-pad,
+    fct: days-fct,
   )
 
   // Resolve events spanning on multiple days/weeks
@@ -392,7 +456,7 @@
       starting-date,
       days,
       time,
-      weekly-title,
+      title-fct,
       debug: debug,
       events: current-events,
       event-fct: event-fct

@@ -11,7 +11,7 @@
     end: "2026-09-18T21",      
     summary: "Dinner",           
     description: "Bring a salad !",  
-    fill: red.lighten(80%),   
+    fill: green.lighten(80%),   
   ),
   (
     start: "2026-09-19T07:30", 
