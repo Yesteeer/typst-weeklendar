@@ -31,8 +31,10 @@
 
 #v(5em)
 #align(center)[
-  #title() A weekly displayed calendar. #v(70%)
-
+  #title() A weekly displayed calendar. 
+  #v(15%)
+  #image("../assets/readme-example-2.png", width: 90%)
+  #v(15%)
   Version 0.1.0 #v(0em)
   #datetime.today().display() #v(0em)
   #link("https://github.com/Yesteeer/typst-weeklendar")
@@ -192,7 +194,7 @@ The title and subtitle of a week's timetable can't be changed. However, you can 
       inset: 15pt,
       [
         #set text(20pt)
-         Week of #(monday).display("[day]") to #(monday + duration(days: 6)).display("[day]") #monday.display("[month repr:long]") 2026
+         Week of #(monday).display("[day]") to #(monday + duration(days: 6)).display("[day]") #monday.display("[month repr:long] [year]")
       ],
     )
   }

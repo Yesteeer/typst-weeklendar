@@ -320,8 +320,8 @@
     "Sunday"
   ),
 
-  /// A function to customize the displayed days appearance. It takes a day name and
-  /// the first week's monday date as arguments. -> auto | function
+  /// A function to customize the displayed days appearance. It takes the days' name list,
+  /// the first week's monday date and the current day's number as arguments. -> auto | function
   days-fct: auto,
 
   /// The padding below and above the displayed days. -> dictionary
@@ -344,7 +344,7 @@
   /// The padding on the left/right around the timeline's time (added to the time's width) and at the end of the timeline's line. -> length
   time-pad: 10pt,
   
-  /// A custom function for generating weekly titles. It takes the first week's day "monday" as an argument and build a custom title depending on monday's date.
+  /// A custom function for generating weekly titles. It takes the first week's monday as an argument and builds a custom title depending on monday's date.
   ///
   /// -> auto | function
   title-fct: auto,

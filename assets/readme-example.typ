@@ -39,13 +39,13 @@
   ),
   (
     start: "2026-09-24T08:15", end: "2026-09-24T10",
-    summary: "Programmation", description: "Lecture",
+    summary: "Programming", description: "Lecture",
     fill: purple.lighten(20%),
     repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-21T13:15", end: "2026-09-21T15",
-    summary: "Programmation", description: "Project",
+    summary: "Programming", description: "Project",
     fill: purple.lighten(60%),
     repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
   ),
