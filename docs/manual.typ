@@ -277,6 +277,7 @@ Finally, the event's boxes can also be fully customized. If you're not happy wit
       height: 100%,
       fill: event.fill, 
       stroke: black + .5pt,
+      inset: (x: 5pt, y: 2pt),
     )[
       #grid(
         columns: 1fr, // makes content really centered
