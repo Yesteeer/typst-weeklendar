@@ -1,15 +1,16 @@
 #import "@preview/cetz:0.5.2" as cetz
 #import "func.typ": *
 
-// A default function for weekly-fct
+// A default function for title-fct
 #let default-title-fct(monday) = {
+  let sunday =  monday + duration(days: 6)
   grid(
     columns: 1fr,
     align: center,
     inset: 15pt,
     [
       #set text(20pt)
-       Week of #(monday).display("[day]") to #(monday + duration(days: 6)).display("[day]") #monday.display("[month repr:long] [year]")
+       Week of #(monday).display("[day]") to #sunday.display("[day] [month repr:long] [year]")
     ],
   )
 }
