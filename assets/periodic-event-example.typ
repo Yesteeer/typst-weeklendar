@@ -5,8 +5,15 @@
   end: "2026-09-16T17",     
   summary: "Potery class",
   fill: purple.lighten(70%),
-  repeat-until: "2026-10-05",
-  repeat-frequency: duration(days: 7)
+  repeat-until: "2026-10-30",
+  repeat-frequency: duration(days: 7),
+  repeat-edit: (
+    "1": "delete",
+    "2": (
+      end: "2026-09-30T21",
+      description: "followed by dinner"
+    )
+  )
 )
 
 

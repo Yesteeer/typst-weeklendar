@@ -28,73 +28,71 @@ Here is a three-week example output, with no styling customization. More on cust
     start: "2026-09-21T08:15", end: "2026-09-21T10",
     summary: "Analysis I", description: "Lecture",
     fill: olive,
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
+    repeat-edit: ("1": (description: "Online lecture"))
   ),
   (
     start: "2026-09-21T10:15", end: "2026-09-21T12",
     summary: "Analysis I", description: "Exercise session",
     fill: olive.lighten(50%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-22T13:15", end: "2026-09-22T15",
     summary: "Probability", description: "Lecture",
     fill: blue.lighten(30%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-22T15:15", end: "2026-09-22T17",
     summary: "Probability", description: "Exercise session",
     fill: blue.lighten(70%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-23T08:15", end: "2026-09-23T10",
     summary: "Linear algebra", description: "Lecture",
     fill: teal,
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-23T10:15", end: "2026-09-23T12",
     summary: "Linear algebra", description: "Exercise session",
     fill: teal.lighten(50%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
+    repeat-edit: ("2": (
+      description: [
+        Exercise session \
+        #box(fill: rgb("#fffb10"), inset: 3pt)[
+          #text(red)[Submit sheet]
+        ]
+      ]
+    ))
   ),
   (
     start: "2026-09-24T08:15", end: "2026-09-24T10",
     summary: "Programming", description: "Lecture",
     fill: purple.lighten(20%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
+    repeat-edit: ("1": (end: "2026-10-01T12"))
   ),
   (
     start: "2026-09-21T13:15", end: "2026-09-21T15",
     summary: "Programming", description: "Project",
     fill: purple.lighten(60%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-25T13:15", end: "2026-09-25T15",
     summary: "Physics", description: "Lecture",
     fill: maroon.lighten(30%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-25T15:15", end: "2026-09-25T17",
     summary: "Physics", description: "Exercise session",
     fill: maroon.lighten(70%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-23T13:15", end: "2026-09-23T15",
-    summary: "Analysis I", description: "Lecture",
-    fill: green,
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-23T15:15", end: "2026-09-23T17",
-    summary: "Analysis I", description: "Exercise session",
-    fill: green.lighten(50%),
-    repeat-until: "2026-10-11", repeat-frequency: duration(days: 7),
+    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
   ),
   (
     start: "2026-09-21T16:30", end: "2026-09-21T17:15",

@@ -146,7 +146,8 @@ Also, when en events spans over more multiple days, the default timespans appear
 
 == Periodic events <periodic>
 
-Periodic events are fairly common and it would be rather tideous to add the events one by one. Instead, weeklendar allows you to use the optional keys `repeat-until` and `repeat-frequency` to automatically generate multiple instances of a periodic event. In order to add periodic events, both of those parameters should be provided. `repeat-until` allow you to specify a datetime (given as an ISO 8601 `str` or a `datetime`) until which the given event should be repeated and `repeat-frequency` the frequency of the event (given as a `duration`). Let's see an example:
+Periodic events are fairly common and it would be rather tideous to add the events one by one. Instead, weeklendar allows you to use the optional keys `repeat-until` and `repeat-frequency` to automatically generate multiple instances of a periodic event. In order to add periodic events, both of those parameters should be provided. `repeat-until` allow you to specify a datetime (same accepted format as for `start` or `end`) until which the given event should be repeated and `repeat-frequency` the frequency of the event (given as a `duration`). \
+Each repetition of an event gets a repetition id (which starts at `0` for the first instance of the event). You can use this id to override the options or delete some instance of the event via the `repeat-edit` key to pass to the event dictionary. This is illustrated in the following example:
 
 ```typst
   #let event = (
@@ -154,8 +155,12 @@ Periodic events are fairly common and it would be rather tideous to add the even
     end: "2026-09-16T17",     
     summary: "Potery class",
     fill: purple.lighten(70%),
-    repeat-until: "2026-10-05",
-    repeat-frequency: duration(days: 7)
+    repeat-until: "2026-10-30",
+    repeat-frequency: duration(days: 7),
+    repeat-edit: (
+      "1": "delete",
+      "2": (end: "2026-09-30T21", description: "followed by dinner")
+    )
   )
 
   #weeklendar(starting-date: "2026-09-14", ending-date: "2026-10-11", event) 
@@ -168,7 +173,8 @@ Periodic events are fairly common and it would be rather tideous to add the even
   [#image("../assets/periodic-event-example.pdf", page: 4, width: 100%)],
 )
 
-As you can see, a single event is repeated until the given date, then it stops. If `weeklendar()`'s `ending-date` is sooner than the `repeat-until` date, then those repeated events that come after the `ending-date` won't appear.
+//As you can see, a single event is repeated until the given date, then it stops. If `weeklendar()`'s `ending-date` is sooner than the `repeat-until` date, then those repeated events that come after the `ending-date` won't appear.
+
 
 = Margins and spacing <spacing>
 

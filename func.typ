@@ -62,21 +62,26 @@
   return calc.ceil((event.start - starting-date).weeks())
 }
 
+// A function that adds defaults to an event
+#let set-defaults-event(event) = {
+  return (
+    repeat-until: none,
+    repeat-frequency: none,
+    repeat-edit: (:),
+    fill: blue.lighten(70%),
+    summary: "",
+    description: "",
+  ) + event
+}
+
 // A function that converts the `start` and `end` of an event to datetime elements. 
-// It also sets some defaults for each event.
 #let to-datetime-event(event) = {
   let (start, end) = (event.start, event.end).map(it => if type(it) != datetime {
     to-datetime(it)
   } else {
     it
   })
-  return (
-    repeat-until: none,
-    repeat-frequency: none,
-    fill: blue.lighten(70%),
-    summary: "",
-    description: "",
-  ) + event + (
+  return event + (
     start: start,
     end: end
   )
@@ -121,16 +126,28 @@
     event.repeat-until == none or type(event.repeat-frequency) == duration, 
     message: "If repeat-until is not none, then repeat-frequency should be a non empty duration."
   )
-  let result = (event,)
+  let result = (event + 
+    (
+      __repeated-event-id__: 0
+    ) + event.repeat-edit.at("0", default: (:)),
+  )
   let current-start = event.start
   let current-end = event.end
+  let id = 1
+
+  // Filter not "deleted" repetitions of the event and adds it to the event list
   while event.repeat-until != none and current-start < to-datetime(event.repeat-until) - duration(days: 7) {
-    result.push(event + (
-      start: current-start + event.repeat-frequency,
-      end: current-end + event.repeat-frequency
-    ))
+    if event.repeat-edit.at(str(id), default: "keep") != "delete" {
+      result.push(event + (
+        start: current-start + event.repeat-frequency,
+        end: current-end + event.repeat-frequency,
+        __repeated-event-id__: 1
+      ) + event.repeat-edit.at(str(id), default: (:))
+      )
+    }
     current-start = current-start + event.repeat-frequency
     current-end = current-end + event.repeat-frequency
+    id = id + 1
   }
   return result
 }

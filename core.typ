@@ -419,9 +419,15 @@
     fct: days-fct,
   )
 
+  // Resolve periodic events
+  let repeated-events = ()
+  for event in events.pos().map(it => to-datetime-event(set-defaults-event(it))) {
+    repeated-events = repeated-events + repeat-event(event)
+  }
+
   // Resolve events spanning on multiple days/weeks
   let resolved-events = ()
-  for event in events.pos().map(it => to-datetime-event(it)) {
+  for event in repeated-events.map(it => to-datetime-event(it)) {
     resolved-events = resolved-events + resolve-event(
       event, 
       time.start - duration(
@@ -433,18 +439,12 @@
     )
   }
 
-  // Resolve periodic events
-  let repeated-events = ()
-  for event in resolved-events {
-    repeated-events = repeated-events + repeat-event(event)
-  }
-
   // Loop over all weeks from starting-date to ending-date
   for week-number in range(1, calc.ceil((ending-date - starting-date).weeks()) + 1) {
 
     // Select the current week's events
     let current-events = ()
-    for event in repeated-events {
+    for event in resolved-events {
       if event-starting(event, starting-date) == week-number {
         current-events.push(event)
       }
