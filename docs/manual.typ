@@ -31,7 +31,7 @@
 
 #v(5em)
 #align(center)[
-  #title() A weekly displayed calendar. 
+  #title() Draw flexible weekly calendars. 
   #v(15%)
   #image("../assets/readme-example-2.png", width: 90%)
   #v(15%)
@@ -44,7 +44,7 @@
 
 = Generate a calendar page <intro>
 
-By default, calling the `weeklendar()` function with empty events generates an empty timetable of `datetime.today()`'s week. This is only meant to have access to an empty page and to the current's week dates, not to be used permanently, since it is based on today's datetime !
+By default, calling the `weeklendar()` function with empty events generates an empty timetable of `datetime.today()`'s week. This is only meant to display an empty calendar week and to show the current's week dates, not to be used permanently, since it is based on today's datetime !
 
 ```typst
   #import "local/weeklendar:0.1.0": *
@@ -52,7 +52,7 @@ By default, calling the `weeklendar()` function with empty events generates an e
   #weeklendar() 
 ```
 
-#image("../assets/empty-example.pdf", page: 1, width: 100%)
+#image("../assets/empty.pdf", page: 1, width: 100%)
 
 It is composed of a title box, which displays a default title as well as the starting and ending dates of the corresponding week. You can't change the style of this default title box, but you can completely customize de title with a custom function (see @title). 
 
@@ -78,14 +78,15 @@ An event is characterized by a dictionary containing at least a `start` and `end
     fill: red.lighten(80%),    // optional with default: blue.lighten(70%)
     repeat-until: none,        // optional with default: none
     repeat-frequency: none,    // optional with default: none
+    repeat-edit: none,         // optional with default: none
   )
 ```
-The first 3 optional keys allow you to customize the default appearance of the displayed event. We will discuss the 2 other optional keys when we look at periodic events (see @periodic). We will see in @event-style that we can add further entries to an event's dictionary. Let's see what happens if we add this event to `weeklendar()`. From now on we will omit the package's import in the examples.
+The first 3 optional keys allow you to customize the default appearance of the displayed event. We will discuss the remaining optional keys when we look at periodic events (see @periodic). We will see in @event-style that we can add further entries to an event's dictionary. Let's see what happens if we add this event to `weeklendar()`. From now on we will omit the package's import in the examples.
 
 ```typst
-#weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", event) 
+ #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", event) 
 ```
-#image("../assets/single-event-example.pdf", page: 1, width: 100%)
+#image("../assets/single-event.pdf", page: 1, width: 100%)
 
 == Early or late events
 
@@ -114,7 +115,7 @@ It could happend that an event doesn't fit in the displayed timelines. Either yo
 
   #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", ..events) 
 ```
-#image("../assets/exceed-event-example.pdf", page: 1, width: 100%)
+#image("../assets/long-event.pdf", page: 1, width: 100%)
 
 == Events on multiple days
 
@@ -136,7 +137,7 @@ Weeklendar also manages events that span on multiple days. Let's suppose you wan
 
   #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", event) 
 ```
-#image("../assets/multiple-days-example.pdf", page: 1, width: 100%)
+#image("../assets/multiple-days.pdf", page: 1, width: 100%)
 
 For now, the description appears on both (or all) days of a multiple days event. This is for practical reasons, if an event spans on two weeks so that the information appears on both week's timetable. 
 
@@ -147,7 +148,7 @@ Also, when en events spans over more multiple days, the default timespans appear
 == Periodic events <periodic>
 
 Periodic events are fairly common and it would be rather tideous to add the events one by one. Instead, weeklendar allows you to use the optional keys `repeat-until` and `repeat-frequency` to automatically generate multiple instances of a periodic event. In order to add periodic events, both of those parameters should be provided. `repeat-until` allow you to specify a datetime (same accepted format as for `start` or `end`) until which the given event should be repeated and `repeat-frequency` the frequency of the event (given as a `duration`). \
-Each repetition of an event gets a repetition id (which starts at `0` for the first instance of the event). You can use this id to override the options or delete some instance of the event via the `repeat-edit` key to pass to the event dictionary. This is illustrated in the following example:
+Each repetition of an event gets a repetition id, which starts at `0` for the first instance of the event. You can use this id to override the options or delete some instance of the event via the `repeat-edit` key to pass to the event dictionary. This is illustrated in the following example:
 
 ```typst
   #let event = (
@@ -167,10 +168,10 @@ Each repetition of an event gets a repetition id (which starts at `0` for the fi
 ```
 #grid(
   columns: 2,
-  [#image("../assets/periodic-event-example.pdf", page: 1, width: 100%)],
-  [#image("../assets/periodic-event-example.pdf", page: 2, width: 100%)],
-  [#image("../assets/periodic-event-example.pdf", page: 3, width: 100%)],
-  [#image("../assets/periodic-event-example.pdf", page: 4, width: 100%)],
+  [#image("../assets/periodic-event.pdf", page: 1, width: 100%)],
+  [#image("../assets/periodic-event.pdf", page: 2, width: 100%)],
+  [#image("../assets/periodic-event.pdf", page: 3, width: 100%)],
+  [#image("../assets/periodic-event.pdf", page: 4, width: 100%)],
 )
 
 //As you can see, a single event is repeated until the given date, then it stops. If `weeklendar()`'s `ending-date` is sooner than the `repeat-until` date, then those repeated events that come after the `ending-date` won't appear.
@@ -180,11 +181,11 @@ Each repetition of an event gets a repetition id (which starts at `0` for the fi
 
 Let us now see how we can customize spacing and margin of the timetable. First we can change the margins around the title and timetable. The `left`, `right` and `bottom` margins work as expected, since they correspond to the distance between the page's borders and the timetable's borders. The `top` margin however, is the space that appears at the top *and* the bottom of the title's box. By calling `weeklendar(debug: true)` one can visualize how these work:
 
-#image("../assets/debug-example.pdf", page: 1, width: 100%)
+#image("../assets/debug.pdf", page: 1, width: 100%)
 
 On the example above, the following default margins are used: `(left: 1.3cm, right: 1.3cm, top: 0.3cm, bottom: 1.3cm)`. Those defaults don't appear in the API, but are later combined with the `weeklendar`'s `margin` argument, so that margins can be individually overwritten.
 
-On the debug timetable, the red box around the times have width `time-width` + 2\*`time-pad` (left and right padding). This same `time-pad` is added at the end of each timeline. Their height is determined by their content.
+On the debug timetable you can see the left and right padding given by `time-pad` around the time slices. This same `time-pad` is added at the end of each timeline.
 
 Finally, the padding above and below the days' names can be changed vie the `days-pad` argument, with defaults: `(above: 0.5cm, below: 0.5cm)`. Note that `days-pad.below` gives the space between the bottom of the days' debug-box (which height is based on its content and width on the length of the timelines) and the top of an event which starts at "7:00" (and not to the first timeline). That explains why the space between the days' names and the first timeline is bigger than the spacing above, although the padding is the same.
 
@@ -230,25 +231,25 @@ We can for example only show the `month` and the week number.
   )
 ```
 
-#image("../assets/title-box-example.pdf", page: 1, width: 100%)
+#image("../assets/title-box.pdf", page: 1, width: 100%)
 
-= Customize days names <days-name>
+= Customize days and times <days-name>
 
-The previous example looks good, but it would be nice to have the dates of the week's days somewhere. What about next to or below the days names ? That is the content of this section
-
-With the same idea, we can also customize the days appearance in the timetable by providing our own `days-fct` function. This function should take two arguments: the date of the week's monday, and the day's name to display. The default function only uses the former argument:
+You can also customize the days' and time slices' appearance in the timetable by providing customs `days-fct` and `time-fct` function. The former should take two arguments: the date of the week's monday, and the day's name to display. The latter take the time's datetime as argument. The defaults are given by:
 
 ```typst
   #let default-days-fct(monday, day-list, day-number) = {
     grid(
       columns: 1fr, // important to make the content really centered
       align: center,
-      [#day-list.at(day-number)],
+      [*#day-list.at(day-number)*],
     )
   }
+
+  #let default-time-fct(time) = {time.display("[hour]:[minute]")}
 ```
 
-But let's say that we want to display the day's date below its name, then we can complete our previous example as follows:
+Let's say that you want to display the day's date below its name and use a 12-hour time display, then you can complete the previous example as follows:
 
 ```typst
   #let title(monday) = [...]
@@ -258,9 +259,13 @@ But let's say that we want to display the day's date below its name, then we can
       columns: 1fr, // important to make the content really centered
       align: center,
       row-gutter: 10pt,
-      [#day-list.at(day-number)],
+      [*#day-list.at(day-number)*],
       [#(monday + duration(days: day-number)).display("[day]")#super("th")]
     )
+  }
+
+  #let time(time) = {
+    time.display("[hour repr:12]:[minute] [period case:lower]")
   }
 
   #weeklendar(
@@ -268,9 +273,10 @@ But let's say that we want to display the day's date below its name, then we can
     height: 8cm,
     title-fct: title,
     days-fct: days,
+    time-fct: time,
   )
 ```
-#image("../assets/days-box-example.pdf", page: 1, width: 100%)
+#image("../assets/days-box.pdf", page: 1, width: 100%)
 
 
 = Customize event styling <event-style>
@@ -278,7 +284,7 @@ But let's say that we want to display the day's date below its name, then we can
 Finally, the event's boxes can also be fully customized. If you're not happy with the default layout, you can provide your own `event-fct` which takes an `event` dictionary as an argument. The default function is defined as:
 
 ```typst
-#let default-event-fct(event) = {
+  #let default-event-fct(event) = {
     rect(
       width: 100%, 
       height: 100%,
@@ -310,7 +316,7 @@ Finally, the event's boxes can also be fully customized. If you're not happy wit
 ```
 The important thing to keep in mind is that whatever content you build for your event, make sure that it takes the whole allocated vertical and horizontal space. Otherwise, the events won't appear properly. The nice thing here, is that you can provide additional keys to your events, which will then be accessible to your custom `event-fct` function !
 
-As an example, we will use the #link("https://typst.app/universe/package/showybox")[Showybox] package to customize our events. We will keep things simple, but the customization possibilities are endless. Here we simply want to add the posibility to remove the hours when not necessary, so each of our events will have to provide a `show-hours` key. The rest is just re-styling.
+As an example, we will use the #link("https://typst.app/universe/package/showybox")[Showybox] package to customize our events. We will keep things simple, but the customization possibilities are endless. Here we simply want to add the posibility to remove the displayed hours of an event when not necessary, so each of our events will have to provide a `show-hours` key. The rest is just re-styling.
 
 ```typst
   #import "local/weeklendar:0.1.0": *
@@ -318,7 +324,7 @@ As an example, we will use the #link("https://typst.app/universe/package/showybo
 
   #let events = (
     (
-      start: "2026-09-14T12:18", end: "2026-09-14T14:18", summary: "Hairdresser",
+      start: "2026-09-14T12:20", end: "2026-09-14T13:30", summary: "Hairdresser",
       fill: olive, show-hours: true,
     ),
     (
@@ -368,7 +374,7 @@ As an example, we will use the #link("https://typst.app/universe/package/showybo
     starting-date: "2026-09-14", ending-date: "2026-09-20", event-fct: event-fct, ..events
   )
 ```
-#image("../assets/event-box-example.pdf", page: 1, width: 100%)
+#image("../assets/event-box.pdf", page: 1, width: 100%)
 
 
 

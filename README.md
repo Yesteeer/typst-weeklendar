@@ -1,14 +1,19 @@
 # Weeklendar
 
-_Weeklendar_ (contraction of _week_ and _calendar_) is a Typst package for creating a calendar displayed as weekly timetables which design (on the visual side) is based on the LaTeX Overleaf [timetable](https://www.overleaf.com/latex/templates/timetable/npdzfmychtjm) template. Take a look at the [manual](https://github.com/Yesteeer/typst-weeklendar/blob/main/docs/manual.pdf?raw=true) for more informations and examples.
+_Weeklendar_ (contraction of _week_ and _calendar_) is a Typst package for creating flexible weekly calendars. Its visual design is based on the LaTeX [timetable](https://www.overleaf.com/latex/templates/timetable/npdzfmychtjm) template on Overleaf. It is ideal for people whose weekly timetables vary from week to week. Its main features are
+- highly customizable title, time slices, week's days, and events styling
+- displaying events on multiple days or weeks
+- a compact syntax for periodic events, which can each be singly edited
+
+The [manual](https://github.com/Yesteeer/typst-weeklendar/blob/main/docs/manual.pdf?raw=true) explains how to use these features and contains multiple examples.
 
 ## Dependencies
 
-_Weeklendar_ makes use of [cetz:0.5.2](https://typst.app/universe/package/cetz/).
+_Weeklendar_ is using [cetz:0.5.2](https://typst.app/universe/package/cetz/).
 
 ## Quickstart
 
-Simply download the package locally (as described on the [Typst Packages](https://github.com/typst/packages)) repository. Then import and use Weeklendar. 
+Install the package locally (as described on the [Typst Packages](https://github.com/typst/packages)) repository. Then import and use _weeklendar_. 
 
 ```typst
 #import "@local/weeklendar:0.1.0": weeklendar
@@ -16,109 +21,12 @@ Simply download the package locally (as described on the [Typst Packages](https:
 
 ## Functions
 
-The package comes with a single function `weeklendar()` which generates a calendar in the form of one timetable page per week.
+The package comes with a single function `weeklendar()` which generates a weekly calendar.
 
 ## Example
 
-Here is a three-week example output, with no styling customization. More on customizing can be found in the [manual](https://github.com/Yesteeer/typst-weeklendar/blob/main/docs/manual.pdf?raw=true).
+Here is an example output, with default styling. More on styling customization can be found in the [manual](https://github.com/Yesteeer/typst-weeklendar/blob/main/docs/manual.pdf?raw=true). Click on the images for the source code.
 
-```typst
-#let events = (
-  (
-    start: "2026-09-21T08:15", end: "2026-09-21T10",
-    summary: "Analysis I", description: "Lecture",
-    fill: olive,
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-    repeat-edit: ("1": (description: "Online lecture"))
-  ),
-  (
-    start: "2026-09-21T10:15", end: "2026-09-21T12",
-    summary: "Analysis I", description: "Exercise session",
-    fill: olive.lighten(50%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-22T13:15", end: "2026-09-22T15",
-    summary: "Probability", description: "Lecture",
-    fill: blue.lighten(30%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-22T15:15", end: "2026-09-22T17",
-    summary: "Probability", description: "Exercise session",
-    fill: blue.lighten(70%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-23T08:15", end: "2026-09-23T10",
-    summary: "Linear algebra", description: "Lecture",
-    fill: teal,
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-23T10:15", end: "2026-09-23T12",
-    summary: "Linear algebra", description: "Exercise session",
-    fill: teal.lighten(50%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-    repeat-edit: ("2": (
-      description: [
-        Exercise session \
-        #box(fill: rgb("#fffb10"), inset: 3pt)[
-          #text(red)[Submit sheet]
-        ]
-      ]
-    ))
-  ),
-  (
-    start: "2026-09-24T08:15", end: "2026-09-24T10",
-    summary: "Programming", description: "Lecture",
-    fill: purple.lighten(20%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-    repeat-edit: ("1": (end: "2026-10-01T12"))
-  ),
-  (
-    start: "2026-09-21T13:15", end: "2026-09-21T15",
-    summary: "Programming", description: "Project",
-    fill: purple.lighten(60%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-25T13:15", end: "2026-09-25T15",
-    summary: "Physics", description: "Lecture",
-    fill: maroon.lighten(30%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-25T15:15", end: "2026-09-25T17",
-    summary: "Physics", description: "Exercise session",
-    fill: maroon.lighten(70%),
-    repeat-until: "2026-12-20", repeat-frequency: duration(days: 7),
-  ),
-  (
-    start: "2026-09-21T16:30", end: "2026-09-21T17:15",
-    summary: "Dentist",
-    fill: red.lighten(30%),
-  ),
-  (
-    start: "2026-10-04T12", end: "2026-10-04T22",
-    summary: "Mom's birthday", description: "Bring a cake !",
-    fill: orange.lighten(50%),
-  ),
-  (
-    start: "2026-10-10T08", end: "2026-10-11T16",
-    summary: "Mountain trip", description: "Buy train ticket's",
-    fill: yellow.darken(10%),
-  ),
-)
-
-#weeklendar(
-  starting-date: "2026-09-21",
-  ending-date: "2026-10-11",
-  time-number: 10,
-  ..events
-)
-```
-
-![image](./assets/readme-example-1.png)
-![image](./assets/readme-example-2.png)
-![image](./assets/readme-example-3.png)
+[![image](assets/readme-example-1.png)](assets/readme-example.typ)
+[![image](assets/readme-example-2.png)](assets/readme-example.typ)
+[![image](assets/readme-example-3.png)](assets/readme-example.typ)

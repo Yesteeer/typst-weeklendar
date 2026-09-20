@@ -1,7 +1,7 @@
 #import "@preview/cetz:0.5.2" as cetz
 #import "func.typ": *
 
-// A default function for title-fct
+// A default function formatting the title
 #let default-title-fct(monday) = {
   let sunday =  monday + duration(days: 6)
   grid(
@@ -15,16 +15,21 @@
   )
 }
 
-// A default function for days-fct
+// A default function formatting the days
 #let default-days-fct(monday, day-list, day-number) = {
   grid(
     columns: 1fr,
     align: center,
-    [#day-list.at(day-number)],
+    [*#day-list.at(day-number)*],
   )
 }
 
-// A default function for event-fct
+// A default function formatting the times
+#let default-time-fct(time) = {
+  time.display("[hour]:[minute]")
+}
+
+// A default function formatting the events
 #let default-event-fct(event) = {
   rect(
     width: 100%, 
@@ -96,30 +101,38 @@
     // outer calendar border
     cetz.draw.rect((0,0), (timetable.width, timetable.height))
 
-    // Successively display timelines
+    // Display time slices
     for i in range(0, time.number) {
       
-      let hour = duration(hours: 1)
-
       let time = time + (
         y-position : hours-positions.at(time.number - i)
       )
 
-      // Time column on the left of the timetable
+      // Generate time slices on the left of the timetable
       cetz.draw.content(
         (time.x-position, time.y-position), 
         anchor: "east",
         [
-          #box(
-            width: time.x-position, 
+          #block(
+            width: time.x-position,
+            inset: 0pt,
             stroke: if debug {red} else {none}
           )[
             #align(center)[
-              #(time.start +  i * hour).display("[hour]:[minute]")]]
-        ] 
+              #{
+                if time.fct != auto {
+                  (time.fct)(time.start + i*duration(hours: 1))
+                } else {
+                  default-time-fct(time.start + i*duration(hours: 1))
+                }
+              }
+            ]
+          ]
+ 
+        ]
       )
 
-      // Draw the timeline's straight dotted horizontal lines
+      // Draw a straight dotted horizontal line for each time slice
       cetz.draw.line(
         (time.x-position, time.y-position), 
         (timetable.width - time.pad, time.y-position), 
@@ -127,7 +140,7 @@
       )
     }
 
-    // Successively display days names
+    // Display days names
     for i in range(0, days.list.len()) {
       cetz.draw.content(
         (days.positions.at(i) + days.width / 2 , timetable.height - days.pad.above), 
@@ -148,7 +161,7 @@
       )
     }
 
-    // Successively display events
+    // Display events
     for event in events {
       add-event(
         event,
@@ -211,16 +224,37 @@
           width: page.width - (page.margin.left + page.margin.right)
         )
 
-        // Compute some useful quantities
+        // Measure the time-slice dimensions
+        let time-dimensions = measure({
+          for i in range(0, time.number) {
+            block(
+              inset: 0pt,
+              stroke: if debug {red} else {none}
+            )[
+              #align(center)[
+                #{
+                  if time.fct != auto {
+                    (time.fct)(time.start + i*duration(hours: 1))
+                  } else {
+                    default-time-fct(time.start + i*duration(hours: 1))
+                  }
+                }
+              ]
+            ]
+          }
+        })
+
+        // Compute time-slices starting position and width
         let time = time + (
-          x-position : time.width + 2*time.pad
+          x-position: time-dimensions.width + 2*time.pad,
+          width: (timetable.width - time-dimensions.width - 3*time.pad) / days.list.len()
         )
 
         // Measure the days box height
         let days-dimensions = measure(
           for i in range(0, days.list.len()) {
             box(
-              width: (timetable.width - time.x-position - time.pad) / days.list.len(),
+              width: time.width,
               stroke: if debug {red} else {none}, 
               inset: (x: 15pt, y: 0pt),
             )[
@@ -235,7 +269,7 @@
           }
         )
 
-        // Compute thetimetable's days horizontal positions, as well as the days' height and width
+        // Compute the days horizontal positions, as well as the days' height and width
         let days = days + (
           positions : 
             subdivide(
@@ -244,10 +278,10 @@
             days.list.len()
           ),
           height: days-dimensions.height + days.pad.above + days.pad.below,
-          width: (timetable.width - time.x-position - time.pad) / days.list.len()
+          width: time.width
         )
 
-        // Compute the timetable's times vertical positions
+        // Compute the times vertical positions
         let hours-positions = subdivide(
           0cm,
           timetable.height - days.height, 
@@ -339,11 +373,13 @@
   /// The spacing between consecutives timelines depends on this number. -> int
   time-number: 11,
 
-  /// The width of the box containing the timeline's times. -> length
-  time-width: 1cm,
-
   /// The padding on the left/right around the timeline's time (added to the time's width) and at the end of the timeline's line. -> length
   time-pad: 10pt,
+  //
+  /// A custom function for the formatting of the time slices.
+  ///
+  /// -> auto | function
+  time-fct: auto,
   
   /// A custom function for generating weekly titles. It takes the first week's monday as an argument and builds a custom title depending on monday's date.
   ///
@@ -409,7 +445,7 @@
     pad: time-pad,
     step: time-step,
     start: time-start,
-    width: time-width
+    fct: time-fct,
   )
 
   // Regroup days arguments

@@ -3,7 +3,7 @@
 
 #let events = (
   (
-    start: "2026-09-14T12:18", end: "2026-09-14T14:18",
+    start: "2026-09-14T12:20", end: "2026-09-14T13:30",
     summary: "Hairdresser",
     fill: olive,
     show-hours: true,

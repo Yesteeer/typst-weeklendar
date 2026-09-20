@@ -2,6 +2,6 @@
 name = "weeklendar"
 version = "0.1.0"
 entrypoint = "lib.typ"
-categories = [ ]
+categories = ["visualization"]
 disciplines = [ ]
-description = "create calendar as weekly timetables"
+description = "Draw flexible weekly calendars"

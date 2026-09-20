@@ -91,6 +91,5 @@
 #weeklendar(
   starting-date: "2026-09-21",
   ending-date: "2026-10-11",
-  time-number: 10,
   ..events
 )

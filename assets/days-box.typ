@@ -18,9 +18,13 @@
     columns: 1fr, // important to make the content really centered
     align: center,
     row-gutter: 10pt,
-    [#day-list.at(day-number)],
+    [*#day-list.at(day-number)*],
     [#(monday + duration(days: day-number)).display("[day]")#super("th")]
   )
+}
+
+#let time(time) = {
+  time.display("[hour repr:12]:[minute] [period case:lower]")
 }
 
 #weeklendar(
@@ -28,4 +32,5 @@
   height: 8cm,
   title-fct: title,
   days-fct: days,
+  time-fct: time,
 )
