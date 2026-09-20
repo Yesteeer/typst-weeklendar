@@ -12,11 +12,11 @@
       date.match(regex(reg-complete)) != none or (date.match(regex(reg-minimal)) != none and date.len() == 10), 
       message: "A date must be of the form \"yyyy-mm-dd-Thh:mm:ss\", \"yyyy-mm-dd-Thh:mm\", \"yyyy-mm-ddThh\" or \"yyyy-mm-dd\"."
     )
-    let splitted = date.split("T")
-    let (_date, _time) = if splitted.len() == 1 {
-      (splitted.at(0), "00:01:00")
+    let split = date.split("T")
+    let (_date, _time) = if split.len() == 1 {
+      (split.at(0), "00:01:00")
     } else {
-      splitted
+      split
     }
     let seq = (_date.split("-") + _time.split(":") + ("0", "0")).map(it => int(it))
     return datetime(
@@ -56,7 +56,7 @@
   return pos
 }
 
-// A fonction that returns the number of weeks between an event's week and the starting week
+// A function that returns the number of weeks between an event's week and the starting week
 #let event-starting(event, starting-date) = {
   let starting-date = change-time(starting-date, 00, 00, 01)
   return calc.ceil((event.start - starting-date).weeks())

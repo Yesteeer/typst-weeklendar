@@ -44,12 +44,12 @@
 
 = Generate a calendar page <intro>
 
-By default, calling the `weeklendar()` function with empty events generates an empty timetable of `datetime.today()`'s week. This is only meant to display an empty calendar week and to show the current's week dates, not to be used permanently, since it is based on today's datetime !
+By default, calling the `weeklendar()` function as above generates an empty timetable of `datetime.today()`'s week. This is only meant to display an empty calendar week and to show the current's week dates, not to be used permanently, since it is based on today's datetime !
 
 ```typst
-  #import "local/weeklendar:0.1.0": *
+  #import "@preview/weeklendar:0.1.0": *
 
-  #weeklendar() 
+  #weeklendar()
 ```
 
 #image("../assets/empty.pdf", page: 1, width: 100%)
@@ -58,9 +58,10 @@ It is composed of a title box, which displays a default title as well as the sta
 
 The timetable itself has an hourly timeline, which starts at "8:00" by default, and has 11 steps (i.e. it goes until 18:00). Those two parameters can be customized (`time-start` and `time-step`resp.). The horizontal spacings can be changed (see @spacing), but the vertical spacing between the lines and times can't be set manually and depends on the time numbers and the available space.
 
-The days' name can also be customized (`days` argument). You can also change the number of days displayed, so you can remove week-ends if you are only intersted in working days. In this case, only use events happening on the first 5 days to avoid events to exceed the timetable. Note that you can only remove days at the end of the week, otherwise the displayed events won't match with the right days ! The spacing above and below the days' names can also be customized (see @spacing).
+The days' name can also be customized (`days` argument). This can be used to change the number of days displayed (to remove week-ends for example). In this case, only use events happening on the first 5 days to avoid events to exceed the timetable. Note that you can only remove days at the end of the week, otherwise the displayed events won't match with the right days ! The spacing above and below the days' names can also be customized (see @spacing).
 
 By changing the `starting-date` and `ending-date` you can add more weeks to your calendar. These dates determine which events will be displayed, and not the range of the displayed weeks ! 
+
 = Add events
 
 A calendar without events makes no sense ! So let us see how we can add events to our weeklendar. From now on, we will always fix starting and ending dates.
@@ -74,7 +75,7 @@ An event is characterized by a dictionary containing at least a `start` and `end
     start: "2026-09-16T08:30", // required
     end: "2026-09-16T12",      // required
     summary: "Math",           // optional with default: ""
-    description: "Lecture in room 306B",  // optional with default: ""
+    description: [Lecture \ Room 306B],  // optional with default: ""
     fill: red.lighten(80%),    // optional with default: blue.lighten(70%)
     repeat-until: none,        // optional with default: none
     repeat-frequency: none,    // optional with default: none
@@ -90,7 +91,7 @@ The first 3 optional keys allow you to customize the default appearance of the d
 
 == Early or late events
 
-It could happend that an event doesn't fit in the displayed timelines. Either you add more timelines, as explained in @intro, or you let the event exceed the timelines. The height of the displayed event's rectangle expands until 1 hour before the first one and 1 hour after the last one linearly and then it stops, even if the event starts earlier or ends later. Let us illustrate this with an example:
+It could happen that an event doesn't fit in the displayed timelines. Either you add more timelines, as explained in @intro, or you let the event exceed the timelines. The height of the displayed event's rectangle expands until 1 hour before the first one and 1 hour after the last one linearly and then it stops, even if the event starts earlier or ends later. Let us illustrate this with an example:
 
 ```typst
   #let events = (
@@ -316,7 +317,7 @@ Finally, the event's boxes can also be fully customized. If you're not happy wit
 ```
 The important thing to keep in mind is that whatever content you build for your event, make sure that it takes the whole allocated vertical and horizontal space. Otherwise, the events won't appear properly. The nice thing here, is that you can provide additional keys to your events, which will then be accessible to your custom `event-fct` function !
 
-As an example, we will use the #link("https://typst.app/universe/package/showybox")[Showybox] package to customize our events. We will keep things simple, but the customization possibilities are endless. Here we simply want to add the posibility to remove the displayed hours of an event when not necessary, so each of our events will have to provide a `show-hours` key. The rest is just re-styling.
+As an example, we will use the #link("https://typst.app/universe/package/showybox")[Showybox] package to customize our events. We will keep things simple, but the customization possibilities are endless. Here we simply want to add the possibility to remove the displayed hours of an event when not necessary, so each of our events will have to provide a `show-hours` key. The rest is just re-styling.
 
 ```typst
   #import "local/weeklendar:0.1.0": *
