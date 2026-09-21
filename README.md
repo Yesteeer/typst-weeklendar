@@ -8,7 +8,7 @@ Weeklendar is using [Cetz 0.5.2](https://typst.app/universe/package/cetz/).
 
 ## Example
 
-An example with default styling. Information on styling customization can be found in the [manual](doc/manual.pdf). 
+An example with default styling. Information on styling customization can be found in the [manual](https://github.com/Yesteeer/typst-weeklendar/releases/download/latest/manual.pdf). 
 
 _Click on any image to see the source code._
 

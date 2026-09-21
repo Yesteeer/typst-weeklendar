@@ -1,2 +1,4 @@
+/tests/*
+*.pdf
 *.sw*
 *.sh
