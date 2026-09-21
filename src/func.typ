@@ -58,8 +58,7 @@
 
 // A function that returns the number of weeks between an event's week and the starting week
 #let relative-week-number(event, starting-date) = {
-  let starting-date = change-time(starting-date, 00, 00, 01)
-  return calc.ceil((event.start - starting-date).weeks())
+  return int(event.start.display("[week_number]")) - int(starting-date.display("[week_number]"))
 }
 
 // A function that adds defaults to an event
@@ -141,7 +140,7 @@
       result.push(event + (
         start: current-start + event.repeat-frequency,
         end: current-end + event.repeat-frequency,
-        __repeated-event-id__: 1
+        __repeated-event-id__: id
       ) + event.repeat-edit.at(str(id), default: (:))
       )
     }

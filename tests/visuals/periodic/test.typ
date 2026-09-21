@@ -9,7 +9,7 @@
   repeat-edit: (
     "1": "delete",
     "2": (
-      end: "2026-01-05T12",
+      end: "2026-01-19T12",
       description: [longer]
     )
   )

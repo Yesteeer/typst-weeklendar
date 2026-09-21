@@ -47,15 +47,9 @@
         else if y == 1 { horizon + center }
         else { bottom + center }
       },
-      [
-        #text(size: 1.1em)[*#event.summary*]
-      ],
-      [
-        #event.description
-      ],
-      [
-        #event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]")
-      ]
+      [ #text(size: 1.1em)[*#event.summary*] ],
+      [ #event.description ],
+      [ #event.start.display("[hour]:[minute]") - #event.end.display("[hour]:[minute]") ]
     )
   ]
 }
@@ -83,106 +77,6 @@
   ]
 }
 
-// A function that constructs a week's timetable
-#let build-timetable(
-  page,
-  starting-date,
-  days,
-  monday,
-  hours-positions,
-  time,
-  timetable,
-  debug: false,
-  events: (),
-  event-fct: (event) => [],
-) = {
-  // Build the week's timetable
-  cetz.canvas({
-    // outer calendar border
-    cetz.draw.rect((0,0), (timetable.width, timetable.height))
-
-    // Display time slices
-    for i in range(0, time.number) {
-      
-      let time = time + (
-        y-position : hours-positions.at(time.number - i)
-      )
-
-      // Generate time slices on the left of the timetable
-      cetz.draw.content(
-        (time.x-position, time.y-position), 
-        anchor: "east",
-        [
-          #block(
-            width: time.x-position,
-            inset: 0pt,
-            stroke: if debug {red} else {none}
-          )[
-            #align(center)[
-              #{
-                if time.fct != auto {
-                  (time.fct)(time.start + i*duration(hours: 1))
-                } else {
-                  default-time-fct(time.start + i*duration(hours: 1))
-                }
-              }
-            ]
-          ]
- 
-        ]
-      )
-
-      // Draw a straight dotted horizontal line for each time slice
-      cetz.draw.line(
-        (time.x-position, time.y-position), 
-        (timetable.width - time.pad, time.y-position), 
-        stroke: (dash: "dotted")
-      )
-    }
-
-    // Display days names
-    for i in range(0, days.list.len()) {
-      cetz.draw.content(
-        (days.positions.at(i) + days.width / 2 , timetable.height - days.pad.above), 
-        anchor: "north",
-        box(
-          width: days.width,
-          stroke: if debug {red} else {none}, 
-          inset: (x: 15pt, y: 0pt),
-        )[
-          #{
-            if days.fct != auto {
-              (days.fct)(monday, days.list, i)
-            } else {
-              default-days-fct(monday, days.list, i)
-            }
-          }
-        ]
-      )
-    }
-
-    // Display events
-    for event in events {
-      add-event(
-        event,
-        days.positions,
-        time.start,
-        time.start + duration(hours: time.number),
-        hours-positions.at(time.number),
-        hours-positions.at(0),
-        days.width,
-        timetable.height - days.height,
-        if event-fct != auto {
-          event-fct
-        }
-        else {
-          default-event-fct
-        },
-      )
-    }
-  })
-}
-
 // A function that constructs a week's calendar page
 #let build-week(
   week-number,
@@ -205,7 +99,7 @@
       context{
 
         // Measure and build the week's title
-        let monday = get-monday(starting-date) + (week-number - 1) * duration(days: 7)
+        let monday = get-monday(starting-date) + week-number * duration(days: 7)
 
         let title = build-week-title(
           monday,
@@ -278,7 +172,6 @@
             days.list.len()
           ),
           height: days-dimensions.height + days.pad.above + days.pad.below,
-          width: time.width
         )
 
         // Compute the times vertical positions
@@ -289,18 +182,90 @@
         )
 
         // Build the week's timetable
-        build-timetable(
-          page,
-          starting-date,
-          days,
-          monday,
-          hours-positions,
-          time,
-          timetable,
-          debug: debug,
-          events: events,
-          event-fct: event-fct,
-        )
+        cetz.canvas({
+          // outer calendar border
+          cetz.draw.rect((0,0), (timetable.width, timetable.height))
+
+          // Display time slices
+          for i in range(0, time.number) {
+            
+            let time = time + (
+              y-position : hours-positions.at(time.number - i)
+            )
+
+            // Generate time slices on the left of the timetable
+            cetz.draw.content(
+              (time.x-position, time.y-position), 
+              anchor: "east",
+              [
+                #block(
+                  width: time.x-position,
+                  inset: 0pt,
+                  stroke: if debug {red} else {none}
+                )[
+                  #align(center)[
+                    #{
+                      if time.fct != auto {
+                        (time.fct)(time.start + i*duration(hours: 1))
+                      } else {
+                        default-time-fct(time.start + i*duration(hours: 1))
+                      }
+                    }
+                  ]
+                ]
+       
+              ]
+            )
+
+            // Draw a straight dotted horizontal line for each time slice
+            cetz.draw.line(
+              (time.x-position, time.y-position), 
+              (timetable.width - time.pad, time.y-position), 
+              stroke: (dash: "dotted")
+            )
+          }
+
+          // Display days names
+          for i in range(0, days.list.len()) {
+            cetz.draw.content(
+              (days.positions.at(i) + time.width / 2 , timetable.height - days.pad.above), 
+              anchor: "north",
+              box(
+                width: time.width,
+                stroke: if debug {red} else {none}, 
+                inset: (x: 15pt, y: 0pt),
+              )[
+                #{
+                  if days.fct != auto {
+                    (days.fct)(monday, days.list, i)
+                  } else {
+                    default-days-fct(monday, days.list, i)
+                  }
+                }
+              ]
+            )
+          }
+
+          // Display events
+          for event in events {
+            add-event(
+              event,
+              days.positions,
+              time.start,
+              time.start + duration(hours: time.number),
+              hours-positions.at(time.number),
+              hours-positions.at(0),
+              time.width,
+              timetable.height - days.height,
+              if event-fct != auto {
+                event-fct
+              }
+              else {
+                default-event-fct
+              },
+            )
+          }
+        })
       }
     }
   )
@@ -330,7 +295,7 @@
   /// The accepted date format are the same as for the starting-date.
   ///
   /// -> str
-  ending-date: datetime.today() + duration(days: 7),
+  ending-date: datetime.today() + duration(seconds: 1),
 
   /// The paper's height (not the same as the timetable's height !). -> length
   height: 21cm,
@@ -476,7 +441,7 @@
   }
 
   // Loop over all weeks from starting-date to ending-date
-  for week-number in range(1, calc.ceil((ending-date - starting-date).weeks()) + 1) {
+  for week-number in range(0, int(ending-date.display("[week_number]")) - int(starting-date.display("[week_number]")) + 1) {
 
     // Select the current week's events
     let current-events = ()

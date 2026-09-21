@@ -10,7 +10,7 @@
 )
 
 #weeklendar(
-  starting-date: "2026-11-29",
-  ending-date: "2026-11-30",
+  starting-date: "2026-11-30",
+  ending-date: "2026-12-01",
   event
 )

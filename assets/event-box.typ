@@ -1,4 +1,5 @@
-#import "../lib.typ": *
+#import "../src/lib.typ": *
+
 #import "@preview/showybox:2.0.4": showybox
 
 #let events = (

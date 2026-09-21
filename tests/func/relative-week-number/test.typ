@@ -13,7 +13,7 @@
 )
 
 #let event-4 = (
-  start: datetime(year: 2026, month: 01, day: 08, hour: 00, minute: 00, second: 01),
+  start: datetime(year: 2026, month: 01, day: 12, hour: 00, minute: 00, second: 01),
 )
 
 #let starting-date = datetime(
@@ -27,6 +27,6 @@
 
 // check output
 #assert.eq(relative-week-number(event-1, starting-date), 1)
-#assert.eq(relative-week-number(event-2, starting-date), 2)
-#assert.eq(relative-week-number(event-3, starting-date), 2)
-#assert.eq(relative-week-number(event-4, starting-date), 1)
+#assert.eq(relative-week-number(event-2, starting-date), 1)
+#assert.eq(relative-week-number(event-3, starting-date), 1)
+#assert.eq(relative-week-number(event-4, starting-date), 2)

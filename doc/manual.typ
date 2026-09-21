@@ -1,6 +1,6 @@
 #import "@preview/tidy:0.4.3"
-#import "../core.typ"
-#import "../lib.typ": *
+#import "../src/core.typ"
+#import "../src/lib.typ": *
 
 #set page(numbering: "1")
 #set par(justify: true)
@@ -390,7 +390,7 @@ As an example, we will use the #link("https://typst.app/universe/package/showybo
 }
 
 #let core-functions = tidy.parse-module(
-  read("../core.typ"),
+  read("../src/core.typ"),
   //name: "Weeklendar", 
   scope: (core: core),
   preamble: "#import core: *\n",

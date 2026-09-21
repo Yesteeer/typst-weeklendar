@@ -1,3 +1,3 @@
-#import "../lib.typ": *
+#import "../src/lib.typ": *
 
 #weeklendar()
