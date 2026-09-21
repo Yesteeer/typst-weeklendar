@@ -1,4 +1,4 @@
-name: Build or release manual
+name: Build manual
 
 on:
   push:
@@ -13,11 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: typst-community/setup-typst@v3
-          
+
+      - run: |
+          typst compile doc/examples/days-box.pdf
+          typst compile doc/examples/debug.pdf
+          typst compile doc/examples/empty.pdf
+          typst compile doc/examples/event-box.pdf
+          typst compile doc/examples/long-event.pdf
+          typst compile doc/examples/multiple-days.pdf
+          typst compile doc/examples/periodic-event.pdf
+          typst compile doc/examples/single-event.pdf
+          typst compile doc/examples/title-box.pdf
       - run: >-
           typst compile doc/manual.typ manual.pdf
           --root .
-          --font-path docs/fonts
           --input source-url=${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}
 
       # Latest release (updated on every push to main)
