@@ -79,7 +79,7 @@ An event is characterized by a dictionary containing at least a `start` and `end
     fill: red.lighten(80%),    // optional with default: blue.lighten(70%)
     repeat-until: none,        // optional with default: none
     repeat-frequency: none,    // optional with default: none
-    repeat-edit: none,         // optional with default: none
+    repeat-edit: (:),          // optional with default: (:)
   )
 ```
 The first 3 optional keys allow you to customize the default appearance of the displayed event. We will discuss the remaining optional keys when we look at periodic events (see @periodic). We will see in @event-style that we can add further entries to an event's dictionary. Let's see what happens if we add this event to `weeklendar()`. From now on we will omit the package's import in the examples.
@@ -295,7 +295,7 @@ Finally, the event's boxes can also be fully customized. If you're not happy wit
     )[
       #grid(
         columns: 1fr, // makes content really centered
-        rows: 1fr, // makes the event's box take all the allocated vertical space
+        rows: (auto, 1fr, auto), // makes the event's box take all the allocated vertical space
         inset: 5pt,
         align: (x, y) => {
           if y == 0 { top + center }

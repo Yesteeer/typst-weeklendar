@@ -40,7 +40,7 @@
   )[
     #grid(
       columns: 1fr, // makes content really centered
-      rows: 1fr, // makes the event's box take all the allocated vertical space
+      rows: (auto, 1fr, auto), // makes the event's box take all the allocated vertical space
       inset: 5pt,
       align: (x, y) => {
         if y == 0 { top + center }
@@ -205,7 +205,7 @@
       context{
 
         // Measure and build the week's title
-        let monday = get-first-monday(starting-date) + (week-number - 1) * duration(days: 7)
+        let monday = get-monday(starting-date) + (week-number - 1) * duration(days: 7)
 
         let title = build-week-title(
           monday,
@@ -315,9 +315,9 @@
   /// The starting-date defines the first week  to be displayed in the calendar. 
   ///
   /// The date must be given with the following format (based on the ISO 8601 extended format): \
-  /// - "dd-mm-yyyy"
-  /// - "dd-mm-yyyyThh" 
-  /// - "dd-mm-yyyyThh:mm" 
+  /// - "dd-mm-yyyy"          // default time: 00:00:01
+  /// - "dd-mm-yyyyThh"       // default time: hh:00:00
+  /// - "dd-mm-yyyyThh:mm"    // default time: hh:mm:00
   /// - "dd-mm-yyyyThh:mm:ss" 
   ///
   /// Or directly as a datetime element.
@@ -481,7 +481,7 @@
     // Select the current week's events
     let current-events = ()
     for event in resolved-events {
-      if event-starting(event, starting-date) == week-number {
+      if relative-week-number(event, starting-date) == week-number {
         current-events.push(event)
       }
     }

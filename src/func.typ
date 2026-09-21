@@ -14,7 +14,7 @@
     )
     let split = date.split("T")
     let (_date, _time) = if split.len() == 1 {
-      (split.at(0), "00:01:00")
+      (split.at(0), "00:00:01")
     } else {
       split
     }
@@ -45,7 +45,7 @@
 // A function to subdivide a segment in a certain number of parts
 #let subdivide(start, end, subdivisions) = {
   assert(start < end, message: "starting number should be < than the ending number")
-  assert(type(subdivisions) == int, message: "the number of subdivisions should be an integer")
+  assert(type(subdivisions) == int and subdivisions > 0, message: "the number of subdivisions should be an integer")
 
   let _step = (end - start) / subdivisions
   let pos = ()
@@ -57,7 +57,7 @@
 }
 
 // A function that returns the number of weeks between an event's week and the starting week
-#let event-starting(event, starting-date) = {
+#let relative-week-number(event, starting-date) = {
   let starting-date = change-time(starting-date, 00, 00, 01)
   return calc.ceil((event.start - starting-date).weeks())
 }
@@ -104,7 +104,7 @@
           int(starting-hour.display("[second]")),
         )
       },
-      end: if int(current-start.display("[day]")) < int(event.end.display("[day]")) {
+      end: if to-datetime(current-start.display("[year]-[month]-[day]")) < to-datetime(event.end.display("[year]-[month]-[day]")) {
         change-time(
           current-start,
           int(ending-hour.display("[hour]")),
@@ -152,9 +152,9 @@
   return result
 }
 
-#let get-first-monday(starting-date) = {
-  let day-number = starting-date.weekday()
-  return starting-date - duration(days: day-number - 1) 
+#let get-monday(date) = {
+  let day-number = date.weekday()
+  return date - duration(days: day-number - 1) 
 }
 
 // A function that displays an event

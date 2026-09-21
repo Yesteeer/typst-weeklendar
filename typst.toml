@@ -11,7 +11,7 @@ repository = "https://github.com/Yesteeer/typst-weeklendar"
 keywords = ["timetable", "calendar", "week", "planner"]
 compiler = "0.14.0"
 exclude = [
-	"docs",
+	"doc",
 	"tests",
 	"assets",
     ".gitignore"
