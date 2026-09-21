@@ -15,15 +15,15 @@ jobs:
       - uses: typst-community/setup-typst@v3
 
       - run: |
-          typst compile doc/examples/days-box.typ
-          typst compile doc/examples/debug.typ
-          typst compile doc/examples/empty.typ
-          typst compile doc/examples/event-box.typ
-          typst compile doc/examples/long-event.typ
-          typst compile doc/examples/multiple-days.typ
-          typst compile doc/examples/periodic-event.typ
-          typst compile doc/examples/single-event.typ
-          typst compile doc/examples/title-box.typ
+          typst compile --root ../ doc/examples/days-box.typ
+          typst compile --root ../ doc/examples/debug.typ
+          typst compile --root ../ doc/examples/empty.typ
+          typst compile --root ../ doc/examples/event-box.typ
+          typst compile --root ../ doc/examples/long-event.typ
+          typst compile --root ../ doc/examples/multiple-days.typ
+          typst compile --root ../ doc/examples/periodic-event.typ
+          typst compile --root ../ doc/examples/single-event.typ
+          typst compile --root ../ doc/examples/title-box.typ
       - run: >-
           typst compile doc/manual.typ manual.pdf
           --root .
