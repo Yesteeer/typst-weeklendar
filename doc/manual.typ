@@ -52,7 +52,7 @@ By default, calling the `weeklendar()` function as above generates an empty time
   #weeklendar()
 ```
 
-#image("../assets/empty.pdf", page: 1, width: 100%)
+#image("examples/empty.pdf", page: 1, width: 100%)
 
 It is composed of a title box, which displays a default title as well as the starting and ending dates of the corresponding week. You can't change the style of this default title box, but you can completely customize de title with a custom function (see @title). 
 
@@ -87,7 +87,7 @@ The first 3 optional keys allow you to customize the default appearance of the d
 ```typst
  #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", event) 
 ```
-#image("../assets/single-event.pdf", page: 1, width: 100%)
+#image("examples/single-event.pdf", page: 1, width: 100%)
 
 == Early or late events
 
@@ -116,7 +116,7 @@ It could happen that an event doesn't fit in the displayed timelines. Either you
 
   #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", ..events) 
 ```
-#image("../assets/long-event.pdf", page: 1, width: 100%)
+#image("examples/long-event.pdf", page: 1, width: 100%)
 
 == Events on multiple days
 
@@ -138,7 +138,7 @@ Weeklendar also manages events that span on multiple days. Let's suppose you wan
 
   #weeklendar(starting-date: "2026-09-14", ending-date: "2026-09-20", event) 
 ```
-#image("../assets/multiple-days.pdf", page: 1, width: 100%)
+#image("examples/multiple-days.pdf", page: 1, width: 100%)
 
 For now, the description appears on both (or all) days of a multiple days event. This is for practical reasons, if an event spans on two weeks so that the information appears on both week's timetable. 
 
@@ -169,10 +169,10 @@ Each repetition of an event gets a repetition id, which starts at `0` for the fi
 ```
 #grid(
   columns: 2,
-  [#image("../assets/periodic-event.pdf", page: 1, width: 100%)],
-  [#image("../assets/periodic-event.pdf", page: 2, width: 100%)],
-  [#image("../assets/periodic-event.pdf", page: 3, width: 100%)],
-  [#image("../assets/periodic-event.pdf", page: 4, width: 100%)],
+  [#image("examples/periodic-event.pdf", page: 1, width: 100%)],
+  [#image("examples/periodic-event.pdf", page: 2, width: 100%)],
+  [#image("examples/periodic-event.pdf", page: 3, width: 100%)],
+  [#image("examples/periodic-event.pdf", page: 4, width: 100%)],
 )
 
 //As you can see, a single event is repeated until the given date, then it stops. If `weeklendar()`'s `ending-date` is sooner than the `repeat-until` date, then those repeated events that come after the `ending-date` won't appear.
@@ -182,7 +182,7 @@ Each repetition of an event gets a repetition id, which starts at `0` for the fi
 
 Let us now see how we can customize spacing and margin of the timetable. First we can change the margins around the title and timetable. The `left`, `right` and `bottom` margins work as expected, since they correspond to the distance between the page's borders and the timetable's borders. The `top` margin however, is the space that appears at the top *and* the bottom of the title's box. By calling `weeklendar(debug: true)` one can visualize how these work:
 
-#image("../assets/debug.pdf", page: 1, width: 100%)
+#image("examples/debug.pdf", page: 1, width: 100%)
 
 On the example above, the following default margins are used: `(left: 1.3cm, right: 1.3cm, top: 0.3cm, bottom: 1.3cm)`. Those defaults don't appear in the API, but are later combined with the `weeklendar`'s `margin` argument, so that margins can be individually overwritten.
 
@@ -232,7 +232,7 @@ We can for example only show the `month` and the week number.
   )
 ```
 
-#image("../assets/title-box.pdf", page: 1, width: 100%)
+#image("examples/title-box.pdf", page: 1, width: 100%)
 
 = Customize days and times <days-name>
 
@@ -277,7 +277,7 @@ Let's say that you want to display the day's date below its name and use a 12-ho
     time-fct: time,
   )
 ```
-#image("../assets/days-box.pdf", page: 1, width: 100%)
+#image("examples/days-box.pdf", page: 1, width: 100%)
 
 
 = Customize event styling <event-style>
@@ -375,7 +375,7 @@ As an example, we will use the #link("https://typst.app/universe/package/showybo
     starting-date: "2026-09-14", ending-date: "2026-09-20", event-fct: event-fct, ..events
   )
 ```
-#image("../assets/event-box.pdf", page: 1, width: 100%)
+#image("examples/event-box.pdf", page: 1, width: 100%)
 
 
 
