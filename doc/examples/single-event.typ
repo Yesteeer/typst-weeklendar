@@ -1,4 +1,4 @@
-#import "../src/lib.typ": *
+#import "../../src/lib.typ": *
 
 #let event = (
   start: "2026-09-16T08:30", // required
