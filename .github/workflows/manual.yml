@@ -13,9 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: typst-community/setup-typst@v3
-
-      - name: Install package locally
-        run: typship install local
           
       - run: >-
           typst compile docs/manual.typ manual.pdf
