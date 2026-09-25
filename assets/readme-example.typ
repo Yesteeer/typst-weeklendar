@@ -1,4 +1,4 @@
-#import "../src/lib.typ": *
+#import "@preview/weeklendar:0.1.0": *
 
 #let events = (
   (
